@@ -41,14 +41,26 @@ function collisions()
 
 function bullet_collision()
 {
-    //collision between bullet and walls
+    
     for (var i = 0; i < player1.bullets.length; i++)
     {
+        //collision between bullet and walls
         if (Math.abs(player1.bullets[i].position.x) >= WIDTH / 2 ||
             Math.abs(player1.bullets[i].position.y) >= HEIGHT / 2)
         {
             scene.remove(player1.bullets[i]);
             player1.bullets.splice(i, 1);
+            i--;
+            continue;
+        }
+        //collision between bullet and enemy
+        if ((Math.abs(player1.bullets[i].position.x - player2.position.x) < 5) && 
+        (Math.abs(player1.bullets[i].position.y - player2.position.y)) < 5)
+        {
+            scene.remove(player1.bullets[i]);
+            player1.bullets.splice(i, 1);
+            player2.life--;
+            player2.dead();
             i--;
         }
     }
@@ -58,15 +70,17 @@ function bullet_collision()
 function player_collision()
 {
     //collision between player and walls
-    var x = player1.graphic.position.x + WIDTH / 2;
-    var y = player1.graphic.position.y + HEIGHT / 2;
+    var x = player1.position.x + WIDTH / 2;
+    var y = player1.position.y + HEIGHT / 2;
 
     if ( x > WIDTH )
-        player1.graphic.position.x -= x - WIDTH;
+        player1.position.x -= x - WIDTH;
+    if ( x < 0 )
+        player1.position.x -= x;
     if ( y < 0 )
-        player1.graphic.position.y -= y;
+        player1.position.y -= y;
     if ( y > HEIGHT )
-        player1.graphic.position.y -= y - HEIGHT;
+        player1.position.y -= y - HEIGHT;
 
 }
 
@@ -77,6 +91,8 @@ function player_falling()
     var sizeOfTileY = HEIGHT / nb_tile;
     var x = player1.graphic.position.x | 0;
     var y = player1.graphic.position.y | 0;
+    var x2 = player2.graphic.position.x | 0;
+    var y2 = player2.graphic.position.y | 0;
     var length = noGround.length;
     var element = null;
 
@@ -93,7 +109,18 @@ function player_falling()
             && (y > tileY) 
             && (y < mtileY))
         {
-           player1.dead();
+            console.log(player1.life)
+            player1.life--;
+            player1.dead();
+        }
+
+        if ((x2 > tileX)
+            && (x2 < mtileX)
+            && (y2 > tileY) 
+            && (y2 < mtileY))
+        {
+            player2.life--;
+            //player2.dead();
         }
     }
 
